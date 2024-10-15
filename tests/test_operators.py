@@ -116,6 +116,7 @@ def test_sigmoid(a: float, b: float) -> None:
     if a > b:
         assert sigmoid(a) - sigmoid(b) >= 0
 
+
 @pytest.mark.task0_2
 @given(small_floats, small_floats, small_floats)
 def test_transitive(a: float, b: float, c: float) -> None:
@@ -123,6 +124,7 @@ def test_transitive(a: float, b: float, c: float) -> None:
     # TODO: Implement for Task 0.2.
     if lt(a, b) and lt(b, c):
         assert lt(a, c)
+
 
 @pytest.mark.task0_2
 @given(small_floats, small_floats)
