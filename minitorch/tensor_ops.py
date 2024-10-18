@@ -264,7 +264,15 @@ def tensor_map(
         in_strides: Strides,
     ) -> None:
         # TODO: Implement for Task 2.3.
-        raise NotImplementedError("Need to implement for Task 2.3")
+        sz = out.size
+        index_out = np.empty_like(out_shape, dtype=np.int32)
+        index_in = np.empty_like(in_shape, dtype=np.int32)
+        for i in range(sz):
+            to_index(i, out_shape, index_out)
+            broadcast_index(index_out, out_shape, in_shape, index_in)
+            pos = index_to_position(index_in, in_strides)
+            out[i] = fn(in_storage[pos])
+        # raise NotImplementedError("Need to implement for Task 2.3")
 
     return _map
 
@@ -309,8 +317,17 @@ def tensor_zip(
         b_strides: Strides,
     ) -> None:
         # TODO: Implement for Task 2.3.
-        raise NotImplementedError("Need to implement for Task 2.3")
-
+        sz = out.size
+        index = np.empty_like(out_shape, dtype=np.int32)
+        index_a = np.empty_like(a_shape, dtype=np.int32)
+        index_b = np.empty_like(b_shape, dtype=np.int32)
+        for i in range(sz):
+            to_index(i, out_shape, index)
+            broadcast_index(index, out_shape, a_shape, index_a)
+            broadcast_index(index, out_shape, b_shape, index_b)
+            pos_a = index_to_position(index_a, a_strides)
+            pos_b = index_to_position(index_b, b_strides)
+            out[i] = fn(a_storage[pos_a], b_storage[pos_b])
     return _zip
 
 
@@ -340,7 +357,19 @@ def tensor_reduce(
         reduce_dim: int,
     ) -> None:
         # TODO: Implement for Task 2.3.
-        raise NotImplementedError("Need to implement for Task 2.3")
+        index = np.empty_like(out_shape, dtype=np.int32)
+        index_a = np.empty_like(a_shape, dtype=np.int32)
+        for i in range(out.size):
+            to_index(i, out_shape, index)
+            index_a = index.copy()
+            for d in range(a_shape[reduce_dim]):
+                index_a[reduce_dim] = d
+                pos = index_to_position(index_a, a_strides)
+                if d == 0:
+                    out[i] = a_storage[pos]
+                else:
+                    out[i] = fn(out[i], a_storage[pos])
+        # raise NotImplementedError("Need to implement for Task 2.3")
 
     return _reduce
 
