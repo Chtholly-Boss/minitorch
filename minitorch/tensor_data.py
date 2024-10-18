@@ -44,7 +44,10 @@ def index_to_position(index: Index, strides: Strides) -> int:
     """
 
     # TODO: Implement for Task 2.1.
-    raise NotImplementedError("Need to implement for Task 2.1")
+    pos = 0
+    for i,s in zip(index, strides):
+        pos += i*s
+    return pos
 
 
 def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
@@ -61,7 +64,16 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
 
     """
     # TODO: Implement for Task 2.1.
-    raise NotImplementedError("Need to implement for Task 2.1")
+    # Get the product of shape
+    sz = int(prod(shape))
+    if ordinal >= sz:
+        raise IndexingError("Index {} out of bounds for shape {}".format(ordinal, shape))
+    # print(f'ordinal: {ordinal}, shape: {shape}')
+    for i in range(len(shape)):
+        sz //= shape[i]
+        out_index[i] = ordinal // sz
+        ordinal %= sz
+    return
 
 
 def broadcast_index(
@@ -191,7 +203,8 @@ class TensorData:
                 raise IndexingError(f"Negative indexing for {aindex} not supported.")
 
         # Call fast indexing.
-        return index_to_position(array(index), self._strides)
+        # ! Use self.strides, not _strides!!!
+        return index_to_position(array(index), self.strides)
 
     def indices(self) -> Iterable[UserIndex]:
         lshape: Shape = array(self.shape)
@@ -228,7 +241,13 @@ class TensorData:
         ), f"Must give a position to each dimension. Shape: {self.shape} Order: {order}"
 
         # TODO: Implement for Task 2.1.
-        raise NotImplementedError("Need to implement for Task 2.1")
+        new_shape = [0] * len(self.shape)
+        new_stride = [0] * len(self.shape)
+        for i,o in enumerate(order):
+            new_shape[i] = self.shape[o]
+            new_stride[i] = self.strides[o]
+        return TensorData(self._storage, tuple(new_shape), tuple(new_stride))
+        raise NotImplementedError("TODO: Implement for Task 2.1")
 
     def to_string(self) -> str:
         s = ""
