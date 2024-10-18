@@ -13,25 +13,25 @@ from typing import Callable, Iterable
 def mul(x: float, y: float) -> float:
     "$f(x, y) = x * y$"
     # TODO: Implement for Task 0.1.
-    return (x * y).__float__()
+    return float(x * y)
 
 
 def id(x: float) -> float:
     "$f(x) = x$"
     # TODO: Implement for Task 0.1.
-    return x.__float__()
+    return float(x)
 
 
 def add(x: float, y: float) -> float:
     "$f(x, y) = x + y$"
     # TODO: Implement for Task 0.1.
-    return (x + y).__float__()
+    return float(x + y)
 
 
 def neg(x: float) -> float:
     "$f(x) = -x$"
     # TODO: Implement for Task 0.1.
-    return (-x).__float__()
+    return float(-x)
 
 
 def lt(x: float, y: float) -> float:

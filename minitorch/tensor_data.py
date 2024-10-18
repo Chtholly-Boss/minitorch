@@ -65,14 +65,18 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
     """
     # TODO: Implement for Task 2.1.
     # Get the product of shape
-    sz = int(prod(shape))
-    if ordinal >= sz:
-        raise IndexingError("Index {} out of bounds for shape {}".format(ordinal, shape))
+    # sz = int(prod(shape))
+    sz = 1
+    for s in shape:
+        sz *= s
+    # if ordinal >= sz:
+    #     raise IndexingError("Index {} out of bounds for shape {}".format(ordinal, shape))
     # print(f'ordinal: {ordinal}, shape: {shape}')
+    tmp = ordinal
     for i in range(len(shape)):
         sz //= shape[i]
-        out_index[i] = ordinal // sz
-        ordinal %= sz
+        out_index[i] = tmp // sz
+        tmp %= sz
     return
 
 
@@ -104,8 +108,8 @@ def broadcast_index(
             out_index[i] = big_index[bsp]
         elif shape[i] == 1:
             out_index[i] = 0
-        else:
-            raise IndexingError("Cannot broadcast shapes {} and {}".format(big_shape, shape))
+        # else:
+        #     raise IndexingError("Cannot broadcast shapes {} and {}".format(big_shape, shape))
         bsp += 1
     return
     raise NotImplementedError("Need to implement for Task 2.2")
@@ -138,8 +142,8 @@ def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
     for i in range(len(shape1)):
         if shape1[i] == shape2[i] or shape1[i] == 1 or shape2[i] == 1:
             new_shape[i] = max(shape1[i], shape2[i])
-        else:
-            raise IndexingError("Cannot broadcast shapes {} and {}".format(shape1, shape2))
+        # else:
+        #     raise IndexingError("Cannot broadcast shapes {} and {}".format(shape1, shape2))
     return tuple(new_shape)
 
 
