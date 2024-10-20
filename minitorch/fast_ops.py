@@ -310,7 +310,40 @@ def _tensor_matrix_multiply(
     b_batch_stride = b_strides[0] if b_shape[0] > 1 else 0
 
     # TODO: Implement for Task 3.2.
-    raise NotImplementedError("Need to implement for Task 3.2")
+    n = out.size
+    # print(n)
+    # print(a_storage)
+    # print(b_storage)
+    # print(a_shape)
+    # print(b_shape)
+    # print(out_shape)
+    for i in prange(n):
+        out_index = out_shape.copy()
+        to_index(i, out_shape, out_index)
+        out_pos = index_to_position(out_index, out_strides)
+        a_index = out_index.copy()
+        b_index = out_index.copy()
+        a_id = a_shape.copy()
+        b_id = b_shape.copy()
 
+        tmp = 0.0
+        for d in range(a_shape[-1]):
+            # ! Batch may not match: out_index and a_index and b_index are not the same
+            a_index[-1] = d
+            broadcast_index(a_index, out_shape, a_shape, a_id)
+            # print(a_id)
+            # a_pos = index_to_position(a_id, a_strides)
+            a_pos = index_to_position(a_id, a_strides)
+
+            b_index[-2] = d
+            broadcast_index(b_index, out_shape, b_shape, b_id)
+            # print(a_id, b_id)
+            # b_pos = index_to_position(b_id, b_strides)
+            b_pos = index_to_position(b_id, b_strides)
+            # print(f'{i}, {d}, {a_pos}, {b_pos}')
+            tmp += a_storage[a_pos] * b_storage[b_pos]
+            # print(tmp)
+        out[out_pos] = tmp
+    # raise NotImplementedError("Need to implement for Task 3.2")
 
 tensor_matrix_multiply = njit(parallel=True, fastmath=True)(_tensor_matrix_multiply)

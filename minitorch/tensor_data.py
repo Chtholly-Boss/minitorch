@@ -104,9 +104,9 @@ def broadcast_index(
     # move bsp forward by the difference of two dim
     bsp += len(big_shape) - len(shape)
     for i in range(len(shape)):
-        if big_shape[bsp] == shape[i]:
+        if big_index[bsp] < shape[i]:
             out_index[i] = big_index[bsp]
-        elif shape[i] == 1:
+        else:
             out_index[i] = 0
         # else:
         #     raise IndexingError("Cannot broadcast shapes {} and {}".format(big_shape, shape))
