@@ -242,7 +242,7 @@ class Permute(Function):
     def forward(ctx: Context, a: Tensor, order: Tensor) -> Tensor:
         # TODO: Implement for Task 2.3.
         order = [int(order[i]) for i in range(order.size)]
-        a._tensor.permute(*order)
+        a._tensor = a._tensor.permute(*order)
         return a
         raise NotImplementedError("Need to implement for Task 2.3")
 

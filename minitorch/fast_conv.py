@@ -71,7 +71,7 @@ def _tensor_conv1d(
     batch_, out_channels, out_width = out_shape
     batch, in_channels, width = input_shape
     out_channels_, in_channels_, kw = weight_shape
-
+    # print(input_shape, weight_shape, out_shape)
     assert (
         batch == batch_
         and in_channels == in_channels_
@@ -81,8 +81,29 @@ def _tensor_conv1d(
     s2 = weight_strides
 
     # TODO: Implement for Task 4.1.
-    raise NotImplementedError("Need to implement for Task 4.1")
 
+    for i in prange(out_size):
+        index_input = input_shape.copy()
+        index_weight = weight_shape.copy()
+        index_out = out_shape.copy()
+        to_index(i, out_shape, index_out)
+        bch, oc, ow = index_out
+        index_input[0] = bch
+        index_weight[0] = oc
+        for j in range(in_channels):
+            # index_weight[0], index_weight[1] = index_out[1], j
+            index_input[1] = j
+            index_weight[1] = j
+            for k in range(kw):
+                if not reverse:
+                    index_input[2] = ow + k
+                else:
+                    index_input[2] = ow - k
+                index_weight[2] = k 
+                val_input = input[index_to_position(index_input, s1)] if index_input[2] >= 0 and index_input[2] < width else 0
+                val_weight = weight[index_to_position(index_weight, s2)]
+                out[index_to_position(index_out, out_strides)] += val_input * val_weight
+    # raise NotImplementedError("Need to implement for Task 4.1")
 
 tensor_conv1d = njit(parallel=True)(_tensor_conv1d)
 
@@ -121,6 +142,7 @@ class Conv1dFun(Function):
         grad_weight = grad_output.zeros((in_channels, out_channels, kw))
         new_input = input.permute(1, 0, 2)
         new_grad_output = grad_output.permute(1, 0, 2)
+        # print(grad_output.shape, new_grad_output.shape)
         tensor_conv1d(
             *grad_weight.tuple(),
             grad_weight.size,

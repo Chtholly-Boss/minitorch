@@ -276,6 +276,7 @@ class TensorData:
         for i,o in enumerate(order):
             new_shape[i] = self.shape[o]
             new_stride[i] = self.strides[o]
+        # print(new_shape)
         return TensorData(self._storage, tuple(new_shape), tuple(new_stride))
         raise NotImplementedError("TODO: Implement for Task 2.1")
 
