@@ -259,7 +259,8 @@ def tensor_reduce(
             for d in prange(a_shape[reduce_dim]):
                 index_a[reduce_dim] = d
                 pos = index_to_position(index_a, a_strides)
-                out[i] = fn(out[i], a_storage[pos])
+                out_pos = index_to_position(index, out_strides)
+                out[out_pos] = fn(out[i], a_storage[pos])
         # raise NotImplementedError("Need to implement for Task 3.1")
 
     return njit(parallel=True)(_reduce)  # type: ignore
@@ -306,6 +307,7 @@ def _tensor_matrix_multiply(
     Returns:
         None : Fills in `out`
     """
+    # ! These two variable can be used when you don't use broadcast_index
     a_batch_stride = a_strides[0] if a_shape[0] > 1 else 0
     b_batch_stride = b_strides[0] if b_shape[0] > 1 else 0
 

@@ -300,7 +300,7 @@ if numba.cuda.is_available():
         for b in range(2):
             for i in range(size_a):
                 for j in range(size_b):
-                    print(i, j)
+                    # print(i, j)
                     assert_close(z[b, i, j], z2[b, i, j])
 
 
