@@ -229,7 +229,38 @@ def _tensor_conv2d(
     s20, s21, s22, s23 = s2[0], s2[1], s2[2], s2[3]
 
     # TODO: Implement for Task 4.2.
-    raise NotImplementedError("Need to implement for Task 4.2")
+    for i in prange(out_size):
+        id_out = out_shape.copy()
+        to_index(i, out_shape, id_out)
+
+        id_in = input_shape.copy()
+        id_w = weight_shape.copy()
+
+        bch, oc, oh, ow = id_out
+        id_in[0] = bch
+        id_w[0] = oc
+
+        for j in range(in_channels):
+            id_in[1] = j
+            id_w[1] = j
+
+            for m in range(kh):
+                id_w[2] = m
+                if not reverse:
+                    id_in[2] = oh + m
+                else:
+                    id_in[2] = oh - m
+                for n in range(kw):
+                    id_w[3] = n
+                    if not reverse:
+                        id_in[3] = ow + n
+                    else:
+                        id_in[3] = ow - n
+                    
+                    val_in = input[index_to_position(id_in, s1)] if 0 <= id_in[2] < height and 0 <= id_in[3] < width else 0.0
+                    val_w = weight[index_to_position(id_w, s2)]
+                    out[index_to_position(id_out, out_strides)] += val_in * val_w
+    # raise NotImplementedError("Need to implement for Task 4.2")
 
 
 tensor_conv2d = njit(parallel=True, fastmath=True)(_tensor_conv2d)
