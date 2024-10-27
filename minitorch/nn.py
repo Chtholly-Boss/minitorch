@@ -77,12 +77,17 @@ class Max(Function):
     def forward(ctx: Context, input: Tensor, dim: Tensor) -> Tensor:
         "Forward of max should be max reduction"
         # TODO: Implement for Task 4.4.
+        d = int(dim[0])
+        ctx.save_for_backward(input, d)
+        return max_reduce(input, d)
         raise NotImplementedError("Need to implement for Task 4.4")
 
     @staticmethod
     def backward(ctx: Context, grad_output: Tensor) -> Tuple[Tensor, float]:
         "Backward of max should be argmax (see above)"
         # TODO: Implement for Task 4.4.
+        input, dim = ctx.saved_values
+        return argmax(input, dim) * grad_output, 0.0
         raise NotImplementedError("Need to implement for Task 4.4")
 
 
@@ -106,6 +111,7 @@ def softmax(input: Tensor, dim: int) -> Tensor:
         softmax tensor
     """
     # TODO: Implement for Task 4.4.
+    return input.exp() / input.exp().sum(dim)
     raise NotImplementedError("Need to implement for Task 4.4")
 
 
@@ -125,6 +131,7 @@ def logsoftmax(input: Tensor, dim: int) -> Tensor:
          log of softmax tensor
     """
     # TODO: Implement for Task 4.4.
+    return input - input.exp().sum(dim).log()
     raise NotImplementedError("Need to implement for Task 4.4")
 
 
@@ -141,6 +148,9 @@ def maxpool2d(input: Tensor, kernel: Tuple[int, int]) -> Tensor:
     """
     batch, channel, height, width = input.shape
     # TODO: Implement for Task 4.4.
+    tensor_tiled, new_height, new_width = tile(input, kernel)
+    tensor_pooled = max_reduce(tensor_tiled, -1)
+    return tensor_pooled.contiguous().view(batch, channel, new_height, new_width)
     raise NotImplementedError("Need to implement for Task 4.4")
 
 
@@ -157,4 +167,10 @@ def dropout(input: Tensor, rate: float, ignore: bool = False) -> Tensor:
         tensor with random positions dropped out
     """
     # TODO: Implement for Task 4.4.
+    if not ignore:
+        rand_tensor = rand(input.shape)
+        rand_drop = rand_tensor > rate
+        return input * rand_drop
+    else:
+        return input
     raise NotImplementedError("Need to implement for Task 4.4")
